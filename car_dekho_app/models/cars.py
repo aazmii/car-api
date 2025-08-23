@@ -5,9 +5,9 @@ from django.db import models
  
 # Create your models here.
 class Cars(models.Model): 
-    carName = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     description = models.TextField(max_length=200)
     active = models.BooleanField(default=False)
     
     def __str__(self):
-        return self.carName
+        return self.name
