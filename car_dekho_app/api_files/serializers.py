@@ -1,3 +1,4 @@
+from decimal import Decimal
 from rest_framework import serializers
 
 from car_dekho_app.models.cars import Cars
@@ -5,27 +6,29 @@ def alphanumeric (value):
     if not str(value).isalnum():
         raise serializers.ValidationError('name should be alphanumeric')
 
-class CarSerializier (serializers.Serializer): 
-    id = serializers.IntegerField(read_only = True)
-    name = serializers.CharField()
-    description = serializers.CharField()
-    active = serializers.BooleanField(read_only = True)
-    chassisnumber = serializers.CharField(validators = [alphanumeric])
-    price = serializers.DecimalField(max_digits = 9, decimal_places= 2)
+class CarSerializier (serializers.ModelSerializer): 
+    discounted_price = serializers.SerializerMethodField()
+    class Meta: 
+        model = Cars
 
-    def create (self ,validated_data): 
+        #adds all fields of the model,/
+        fields = '__all__' 
+        # fields= ['id','name','description','active','chassisnumber','price']
+        # exclude = ['active'] 
         
-        return Cars.objects.create(**validated_data)
-    
-    def update(self, instance,validated_data): 
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.active = validated_data.get('active', instance.active)
-        instance.chassisnumber = validated_data.get('chassisnumber', instance.chassisnumber)
-        instance.price = validated_data.get('price', instance.price)
-        instance.save()
-        return instance
-    
+        #fields that cannot be changed
+        read_only_fields = ['id','active'] 
+        
+        #custom validators
+        extra_kwargs = {
+            'chassisnumber': {'validators': [alphanumeric]}
+        }
+
+    def get_discounted_price(self, obj): 
+        if obj.price: 
+            return obj.price * Decimal(0.9)
+        return None
+
     #FIELD LEVEL VALIDATION
     def validate_price(self, value): 
         if value <= 20000: 
