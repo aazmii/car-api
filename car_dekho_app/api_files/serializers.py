@@ -2,6 +2,16 @@ from decimal import Decimal
 from rest_framework import serializers
 
 from car_dekho_app.models.cars import Cars
+from car_dekho_app.models.showroom import Showrooms
+
+class ShowroomSerializer (serializers.ModelSerializer): 
+    class Meta: 
+        model = Showrooms
+        fields = ['id','name','location','website']
+
+
+
+
 def alphanumeric (value): 
     if not str(value).isalnum():
         raise serializers.ValidationError('name should be alphanumeric')
