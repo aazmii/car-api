@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
 from car_dekho_app.models.cars import Cars
+
+# 3. Object level
 def alphanumeric (value): 
     if not str(value).isalnum():
         raise serializers.ValidationError('name should be alphanumeric')
@@ -26,13 +28,13 @@ class CarSerializier (serializers.Serializer):
         instance.save()
         return instance
     
-    #FIELD LEVEL VALIDATION
+    # 1. FIELD LEVEL VALIDATION
     def validate_price(self, value): 
         if value <= 20000: 
             raise serializers.ValidationError("price should be greater than 20000")
         return value
     
-    # OBJECT LEVEL VALIDATOR
+    # 2. OBJECT LEVEL VALIDATOR
     def validate(self,data): 
         if data['name'] == data['description']: 
             raise serializers.ValidationError('Name and description should not be same')
